@@ -30,6 +30,7 @@ def optimize(f, n, start=None, block=10, error=1e-9, gradient=_subgradient):
     X = start or (0,) * n
     error **= 2
     bounds = [[None, None] for _ in range(n)]
+    power = [1 for _ in range(n)]
     while True:
         G = gradient(f, X)
         m = _squared_magnitude(G)
@@ -47,9 +48,11 @@ def optimize(f, n, start=None, block=10, error=1e-9, gradient=_subgradient):
             if bounds[i][0] and bounds[i][1]:
                 temp[i] = (bounds[i][0] + bounds[i][1]) / 2
             elif bounds[i][0]:
-                temp[i] = X[i] + block
+                temp[i] = X[i] + block ** power[i]
+                power[i] += 1
             else:
-                temp[i] = X[i] - block
+                temp[i] = X[i] - block ** power[i]
+                power[i] += 1
         X = tuple(temp)
     return X
 
