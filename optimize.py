@@ -2,13 +2,18 @@
 """
 
 
+def _eval_offset(f, X, i, offset):
+    temp = list(X)
+    temp[i] += offset
+    return f(*temp)
+
+
 def _subgradient(f, X, step=1e-12):
     G = [0] * len(X)
-    fX = f(*X)
     for i in range(len(X)):
-        tX = list(X)
-        tX[i] += step
-        G[i] = (f(*tX) - fX) / step
+        y1 = _eval_offset(f, X, i, step)
+        y2 = _eval_offset(f, X, i, -step)
+        G[i] = (y1 - y2) / (2 * step)
     return tuple(G)
 
 
